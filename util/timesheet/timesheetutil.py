@@ -13,6 +13,13 @@ class TimeSheetCalendar:
         self.__month = month
         self.__week_list = []
         self.__monthday_map = {}
+        self.__weekday_map = {'0':'Mon',
+                              '1':'Tues',
+                              '2':'Wed',
+                              '3':'Thur',
+                              '4':'Fri',
+                              '5':'Sat',
+                              '6':'Sun'}
 
     def __generatemonthmap(self):
         firsttoday = datetime.datetime(self.__year, self.__month, 1)
@@ -37,20 +44,7 @@ class TimeSheetCalendar:
         else:
             print('Invalid month')
         for monthday in self.__monthday_map:
-            if self.__monthday_map[monthday] == 0:
-                self.__monthday_map[monthday] = 'Mon'
-            elif self.__monthday_map[monthday] == 1:
-                self.__monthday_map[monthday] = 'Tues'
-            elif self.__monthday_map[monthday] == 2:
-                self.__monthday_map[monthday] = 'Wed'
-            elif self.__monthday_map[monthday] == 3:
-                self.__monthday_map[monthday] = 'Thur'
-            elif self.__monthday_map[monthday] == 4:
-                self.__monthday_map[monthday] = 'Fri'
-            elif self.__monthday_map[monthday] == 5:
-                self.__monthday_map[monthday] = 'Sat'
-            else:
-                self.__monthday_map[monthday] = 'Sun'
+            self.__monthday_map[monthday] = self.__weekday_map[str(self.__monthday_map[monthday])]
 
     def __generateweeklist(self):
         extra_monthday_map = {}
@@ -60,7 +54,7 @@ class TimeSheetCalendar:
         for monthday in self.__monthday_map:
             one_week.append(monthday)
             days += 1
-            if days % 7 == 0:
+            if len(one_week) == 7:
                 self.__week_list.append(one_week)
                 one_week = []
             elif days == len(self.__monthday_map):
@@ -71,6 +65,21 @@ class TimeSheetCalendar:
                     one_week.append(tmpday.strftime('%Y-%m-%d'))
                     extra_monthday_map[tmpday.strftime('%Y-%m-%d')] = tmpday.weekday()
                 self.__week_list.append(one_week)
+            elif days == 1:
+                # 每月1号若不是周一，则往前找到最近的周一
+                if self.__monthday_map[monthday] != 'Mon':
+                    tmptimeinfo = monthday.split('-')
+                    tmpday = datetime.datetime(int(tmptimeinfo[0]), int(tmptimeinfo[1]), int(tmptimeinfo[2]))
+                    while tmpday.weekday() != 0:
+                        tmpday -= oneday
+                        one_week.append(tmpday.strftime('%Y-%m-%d'))
+                        extra_monthday_map[tmpday.strftime('%Y-%m-%d')] = tmpday.weekday()
+                    one_week.reverse()
+                if len(one_week) == 7:
+                    self.__week_list.append(one_week)
+                    one_week = []
+
+
         self.__monthday_map.update(extra_monthday_map)
 
     def generatecalendar(self):
