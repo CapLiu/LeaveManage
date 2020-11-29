@@ -18,6 +18,7 @@ from database.tbltimesheetevent import TimeSheetEvent
 from database.tbltimesheet import TimeSheet
 from sqlalchemy import and_
 from util.users.userutil import changeuserorganization
+from util.timesheet.timesheetutil import changetimesheetstate
 
 
 if platform.system() == 'Windows':
@@ -268,14 +269,12 @@ class ViewTimeSheet(BaseHandler):
         monthday_map = timesheetcalendar.getmonthmap()
         week_list = timesheetcalendar.getweeklist()
         timesheet_map = timesheetviewer.gettimesheetmap()
-        print(timesheet_map)
         timesheet_state = timesheetviewer.getstate()
         timesheet_approveuser = timesheetviewer.getapproveuser()
         timesheet_approvedate = timesheetviewer.getapprovedate()
         viewtimesheetpath = gettemplatepath('viewtimesheet.html')
         self.render(viewtimesheetpath, monthdaymap=monthday_map,weeklist=week_list,timesheetmap=timesheet_map,timesheetstate=timesheet_state,
                     timesheetapprovedate=timesheet_approvedate,timesheetapproveuser=timesheet_approveuser)
-
 
 class CreateTimeSheetEvent(BaseHandler):
     def get(self):
@@ -340,6 +339,87 @@ class UserOrganization(BaseHandler):
             result = '操作失败！'
             self.render(resultpath,result=result)
 
+class ApproveTimeSheetIndex(BaseHandler):
+    def get(self):
+        approveinfolist = []
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        approvetimesheetindexpath = gettemplatepath('approvetimesheetindex.html')
+        employees = session.query(User).filter(User.supervisor==username)
+        year = datetime.datetime.today().year
+        for employee in employees:
+            approveinfo = {}
+            monthlist = []
+            approveinfo['employee'] = employee.username
+            timesheets = session.query(TimeSheet).filter(and_(TimeSheet.username == employee.username,TimeSheet.year == year))
+            for timesheet in timesheets:
+                monthlist.append(timesheet.month)
+                approveinfo[timesheet.month] = timesheet.state
+            approveinfo['monthlist'] = monthlist
+
+            approveinfolist.append(approveinfo)
+        self.render(approvetimesheetindexpath,approveinfolist=approveinfolist,year=year)
+
+
+class ApproveTimeSheet(BaseHandler):
+    def get(self,year,month,employee):
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        year = int(year.split('=')[1])
+        month = int(month.split('=')[1])
+        employee = employee.split('=')[1]
+        timesheetviewer = TimeSheetViewer(username=employee,year=year,month=month)
+        timesheetviewer.gettimesheetmap()
+        timesheetcalendar = TimeSheetCalendar(year, month)
+        timesheetcalendar.generatecalendar()
+        monthday_map = timesheetcalendar.getmonthmap()
+        week_list = timesheetcalendar.getweeklist()
+        timesheet_map = timesheetviewer.gettimesheetmap()
+        print(timesheet_map)
+        timesheet_state = timesheetviewer.getstate()
+        timesheet_approveuser = timesheetviewer.getapproveuser()
+        timesheet_approvedate = timesheetviewer.getapprovedate()
+        approvetimesheetpath = gettemplatepath('approvetimesheet.html')
+        self.render(approvetimesheetpath, monthdaymap=monthday_map,weeklist=week_list,timesheetmap=timesheet_map,timesheetstate=timesheet_state,
+                    timesheetapprovedate=timesheet_approvedate,timesheetapproveuser=timesheet_approveuser,employee=employee,year=year,month=month)
+
+    def post(self):
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        employee = self.get_argument('employee')
+        year = self.get_argument('year')
+        month = self.get_argument('month')
+        result = changetimesheetstate(username,employee,int(year),int(month),'Approved')
+        resultpath = gettemplatepath('timesheetfail.html')
+        if result == 'Success':
+            self.redirect('/approvetimesheetindex')
+        else:
+            result = '操作失败！'
+            self.render(resultpath,result=result)
+
+class RejectTimeSheet(BaseHandler):
+    def get(self,year,month,employee):
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        employee = employee.split('=')[1]
+        year = year.split('=')[1]
+        month = month.split('=')[1]
+        result = changetimesheetstate(username,employee,int(year),int(month),'Reject')
+        resultpath = gettemplatepath('timesheetfail.html')
+        if result == 'Success':
+            self.redirect('/approvetimesheetindex')
+        else:
+            result = '操作失败！'
+            self.render(resultpath,result=result)
+
 
 def make_app():
     routelist = [
@@ -357,7 +437,11 @@ def make_app():
         (r"/viewtimesheet/(year=\d*)&(month=\d*)",ViewTimeSheet),
         (r"/createtimesheetevent",CreateTimeSheetEvent),
         (r"/timesheetindex",TimeSheetIndex),
-        (r"/userorganization",UserOrganization)
+        (r"/userorganization",UserOrganization),
+        (r"/approvetimesheetindex",ApproveTimeSheetIndex),
+        (r"/approvetimesheet/(year=\d*)&(month=\d*)&(employee=.*)",ApproveTimeSheet),
+        (r"/approvetimesheet", ApproveTimeSheet),
+        (r"/rejecttimesheet/(year=\d*)&(month=\d*)&(employee=.*)", RejectTimeSheet),
     ]
     return tornado.web.Application(routelist,cookie_secret='12f6352#527',autoreload=True,debug=True)
 

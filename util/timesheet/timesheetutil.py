@@ -239,3 +239,13 @@ def createtimesheetevent(eventcode,nickname):
         newtimesheetevent = TimeSheetEvent(eventcode=eventcode,nickname=nickname)
         result = insertdata(newtimesheetevent)
     return result
+
+def changetimesheetstate(approver,employee,year,month,state):
+    timesheet = session.query(TimeSheet).filter(and_(TimeSheet.username == employee,TimeSheet.year == year, TimeSheet.month == month)).first()
+    result = 'Fail'
+    if type(timesheet) is TimeSheet:
+        timesheet.state = state
+        timesheet.approveusername = approver
+        timesheet.approvedate = datetime.datetime.today()
+        result = insertdata(timesheet)
+    return result
