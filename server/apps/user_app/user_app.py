@@ -31,7 +31,8 @@ class Login(BaseHandler):
         loginusername = self.get_secure_cookie('loginusername')
         loginuserpassword = self.get_secure_cookie('loginuserpassword')
         remembermevalue = self.get_secure_cookie('rememberme')
-        remembermevalue = str(remembermevalue,encoding='utf-8')
+        if remembermevalue is not None:
+            remembermevalue = str(remembermevalue,encoding='utf-8')
         if loginusername is None and loginuserpassword is None:
             loginusername = ''
             loginuserpassword = ''
