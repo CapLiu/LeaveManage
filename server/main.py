@@ -8,8 +8,6 @@ from util.users.userutil import hasinit, inituser
 
 import tornado.ioloop
 import tornado.web
-from tornado.httpserver import HTTPServer
-import tornado.locale
 
 from server.apps.user_app.user_app import *
 from server.apps.timesheet_app.timesheet_app import *
@@ -57,10 +55,6 @@ if __name__ == '__main__':
             exit(0)
     app = make_app()
     port = int(getconfig('PORT'))
-    #app.listen(port)
-    server = HTTPServer(app)
-    server.listen(port)
-    #mainserver = tornado.ioloop.IOLoop.current()
+    app.listen(port)
     print('系统启动')
-    #mainserver.start()
     tornado.ioloop.IOLoop.current().start()

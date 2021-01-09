@@ -1,6 +1,6 @@
 from server.apps.basehandler import BaseHandler
 from setting.globalsettings import gettemplatepath
-from util.users.userutil import createusergroup,getallusergroup, createuser, loginuser,approveuser
+from util.users.userutil import createusergroup,getallusergroup, createuser, loginuser,approveuser,changeuserorganization
 from util.users.userutil import logoffuser
 from database.tblusergroup import UserGroup
 from database.tbluser import User
