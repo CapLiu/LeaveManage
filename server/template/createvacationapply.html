@@ -11,7 +11,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
-    <title>创建考勤事件类别</title>
+    <title>填写假单</title>
     <!-- Bootstrap Core CSS -->
     <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -52,10 +52,10 @@
                 <!-- ============================================================== -->
                 <div class="row page-titles">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h3 class="text-themecolor m-b-0 m-t-0">创建考勤事件类别</h3>
+                        <h3 class="text-themecolor m-b-0 m-t-0">填写假单</h3>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item active">创建考勤事件类别</li>
+                            <li class="breadcrumb-item active">填写假单</li>
                         </ol>
                     </div>
                 </div>
@@ -71,34 +71,42 @@
                     <div class="col-lg-8 col-xlg-9 col-md-7">
                         <div class="card">
                             <div class="card-block">
-                                <h4 class="card-title">当前考勤事件类别</h4>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>事件类别</th>
-                                                <th>创建时间</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for category in timesheeteventcategorys %}
-                                            <tr>
-                                                <td>{{ category.id }}</td>
-                                                <td>{{ escape(category.eventcategoryname) }}</td>
-                                                <td>{{ category.createdate }}</td>
-                                            </tr>
-                                            {% end %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="card-block">
                                 <form class="form-horizontal form-material" action="/createtimesheeteventcategory" method="post" >
                                     <div class="form-group">
-                                        <label class="col-md-12">事件类 *</label>
+                                        <label class="col-md-12">假别</label>
                                         <div class="col-md-12">
-                                            <input type="text" class="form-control form-control-line" required=true name="categoryname" id="categoryname"/>
+                                            <select class="form-control form-control-line" name="vacationcategory" id="vacationcategory">
+                                                {% for category in vacationcategory %}
+                                                <option value="{{ category.eventcode }}">{{ category.nickname }}</option>
+                                                {% end %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-12">开始时间</label>
+                                        <div class="col-md-12">
+                                            <input type="date" name="startdate" id="startdate" /> <select class="form-control form-control-line" name="startdateMorning" id="startdateMorning">
+                                            <option value="Morning">上午</option>
+                                            <option value="Afternoon">下午</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-12">结束时间</label>
+                                        <div class="col-md-12">
+                                            <input type="date" name="enddate" id="enddate" /> <select class="form-control form-control-line" name="enddateMorning" id="enddateMorning">
+                                            <option value="Morning">上午</option>
+                                            <option value="Afternoon">下午</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-12">时间合计</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-12">请假原因</label>
+                                        <div class="col-md-12">
+                                            <textarea rows=10 class="form-control form-control-line" required=true name="reason" id="reason"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-group">

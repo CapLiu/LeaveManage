@@ -207,3 +207,9 @@ class CreateTimeSheetEventCategory(BaseHandler):
             self.render(resultpath,result=result)
         else:
             self.redirect('/createtimesheeteventcategory')
+
+class CreateVacationApply(BaseHandler):
+    def get(self):
+        createvacationapplypath = gettemplatepath('createvacationapply.html')
+        vacationcategory = session.query(TimeSheetEvent).filter(TimeSheetEvent.eventcategory == 'Vacation')
+        self.render(createvacationapplypath, vacationcategory=vacationcategory)

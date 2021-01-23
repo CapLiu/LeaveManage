@@ -46,6 +46,7 @@ def make_app():
         (r"/approvetimesheet", ApproveTimeSheet),
         (r"/rejecttimesheet/(year=\d*)&(month=\d*)&(employee=.*)", RejectTimeSheet),
         (r"/createtimesheeteventcategory", CreateTimeSheetEventCategory),
+        (r"/createvacationapply", CreateVacationApply),
     ]
     return tornado.web.Application(routelist,cookie_secret='12f6352#527',autoreload=True,debug=True,template_path='D:\\LeaveManage\\server\\template')
 

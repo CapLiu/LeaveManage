@@ -245,6 +245,7 @@ def createtimesheetevent(eventcode,nickname,eventcategory):
         result = insertdata(timesheetevent)
     return result
 
+
 def changetimesheetstate(approver,employee,year,month,state):
     timesheet = session.query(TimeSheet).filter(and_(TimeSheet.username == employee,TimeSheet.year == year, TimeSheet.month == month)).first()
     result = 'Fail'
@@ -254,6 +255,7 @@ def changetimesheetstate(approver,employee,year,month,state):
         timesheet.approvedate = datetime.datetime.today()
         result = insertdata(timesheet)
     return result
+
 
 def createtimesheeteventcategory(categoryname):
     timesheeteventcategory = session.query(TimeSheetEventCategory).filter(TimeSheetEventCategory.eventcategoryname == categoryname)
