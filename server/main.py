@@ -12,6 +12,8 @@ import tornado.web
 from server.apps.user_app.user_app import *
 from server.apps.timesheet_app.timesheet_app import *
 
+import requests
+
 if platform.system() == 'Windows':
     import asyncio
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -43,6 +45,7 @@ def make_app():
         (r"/approvetimesheet/(year=\d*)&(month=\d*)&(employee=.*)",ApproveTimeSheet),
         (r"/approvetimesheet", ApproveTimeSheet),
         (r"/rejecttimesheet/(year=\d*)&(month=\d*)&(employee=.*)", RejectTimeSheet),
+        (r"/createtimesheeteventcategory", CreateTimeSheetEventCategory),
     ]
     return tornado.web.Application(routelist,cookie_secret='12f6352#527',autoreload=True,debug=True,template_path='D:\\LeaveManage\\server\\template')
 

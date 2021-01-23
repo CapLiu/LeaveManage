@@ -5,6 +5,7 @@ from database.tbltimesheetevent import TimeSheetEvent
 from database.dbcore import session
 from database.curd import insertdata,deletedata
 from sqlalchemy import and_
+from database.tbltimesheeteventcategory import TimeSheetEventCategory
 
 
 class TimeSheetCalendar:
@@ -232,12 +233,16 @@ def filltimesheet(username,year,month,business_list):
     return result
 
 
-def createtimesheetevent(eventcode,nickname):
-    timesheetevent = session.query(TimeSheetEvent).filter(TimeSheetEvent.eventcode == eventcode)
+def createtimesheetevent(eventcode,nickname,eventcategory):
+    timesheetevent = session.query(TimeSheetEvent).filter(TimeSheetEvent.eventcode == eventcode).first()
     result = 'Fail'
     if type(timesheetevent) is not TimeSheetEvent:
-        newtimesheetevent = TimeSheetEvent(eventcode=eventcode,nickname=nickname)
+        newtimesheetevent = TimeSheetEvent(eventcode=eventcode,nickname=nickname,eventcategory=eventcategory)
         result = insertdata(newtimesheetevent)
+    # Modify by DS Liu 2021/1/23
+    else:
+        timesheetevent.eventcategory = eventcategory
+        result = insertdata(timesheetevent)
     return result
 
 def changetimesheetstate(approver,employee,year,month,state):
@@ -248,4 +253,12 @@ def changetimesheetstate(approver,employee,year,month,state):
         timesheet.approveusername = approver
         timesheet.approvedate = datetime.datetime.today()
         result = insertdata(timesheet)
+    return result
+
+def createtimesheeteventcategory(categoryname):
+    timesheeteventcategory = session.query(TimeSheetEventCategory).filter(TimeSheetEventCategory.eventcategoryname == categoryname)
+    result = 'Fail'
+    if type(timesheeteventcategory) is not TimeSheetEventCategory:
+        newtimesheeteventcategory = TimeSheetEventCategory(eventcategoryname=categoryname,createdate=datetime.date.today())
+        result = insertdata(newtimesheeteventcategory)
     return result

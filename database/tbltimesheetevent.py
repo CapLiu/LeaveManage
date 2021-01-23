@@ -6,6 +6,7 @@ class TimeSheetEvent(Base):
     id = Column(Integer,autoincrement=True,primary_key=True)
     eventcode = Column(String,nullable=False,unique=True)
     nickname = Column(String,nullable=False,unique=True)
+    eventcategory = Column(String)
 
     def __repr__(self):
         return '<timesheetevent(eventcode=%s,state=%s)>' % (self.eventcode,self.nickname)

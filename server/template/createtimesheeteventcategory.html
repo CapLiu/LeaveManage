@@ -11,7 +11,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
-    <title>创建考勤事件</title>
+    <title>创建考勤事件类别</title>
     <!-- Bootstrap Core CSS -->
     <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -52,10 +52,10 @@
                 <!-- ============================================================== -->
                 <div class="row page-titles">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h3 class="text-themecolor m-b-0 m-t-0">创建考勤事件</h3>
+                        <h3 class="text-themecolor m-b-0 m-t-0">创建考勤事件类别</h3>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item active">创建考勤事件</li>
+                            <li class="breadcrumb-item active">创建考勤事件类别</li>
                         </ol>
                     </div>
                 </div>
@@ -71,23 +71,22 @@
                     <div class="col-lg-8 col-xlg-9 col-md-7">
                         <div class="card">
                             <div class="card-block">
-                                <h4 class="card-title">当前考勤事件</h4>
+                                <h4 class="card-title">当前考勤事件类别</h4>
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>事件代码</th>
-                                                <th>事件别名</th>
+                                                <th>事件类别</th>
+                                                <th>创建时间</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for event in timesheetevents %}
+                                            {% for category in timesheeteventcategorys %}
                                             <tr>
-                                                <td>{{ event.id }}</td>
-                                                <td>{{ escape(event.eventcode) }}</td>
-                                                <td>{{ escape(event.nickname) }}</td>
-                                                <td>{{ event.eventcategory }}</td>
+                                                <td>{{ category.id }}</td>
+                                                <td>{{ escape(category.eventcategoryname) }}</td>
+                                                <td>{{ category.createdate }}</td>
                                             </tr>
                                             {% end %}
                                         </tbody>
@@ -95,28 +94,16 @@
                                 </div>
                             </div>
                             <div class="card-block">
-                                <form class="form-horizontal form-material" action="/createtimesheetevent" method="post" >
+                                <form class="form-horizontal form-material" action="/createtimesheeteventcategory" method="post" >
                                     <div class="form-group">
-                                        <label class="col-md-12">事件名 *</label>
+                                        <label class="col-md-12">事件类 *</label>
                                         <div class="col-md-12">
-                                            <input type="text" class="form-control form-control-line" required=true name="eventcode" id="eventcode">
-                                        </div>
-                                        <label class="col-md-12">别名 *</label>
-                                        <div class="col-md-12">
-                                            <input type="text" class="form-control form-control-line" required=true name="eventnickname" id="eventnickname">
-                                        </div>
-                                        <label class="col-md-12">类别 *</label>
-                                        <div class="col-md-12">
-                                            <select class="form-control form-control-line" name="eventcategory" id="eventcategory">
-                                                {% for category in timesheeteventcategorys %}
-                                                <option value="{{ category.eventcategoryname }}">{{ category.eventcategoryname }}</option>
-                                                {% end %}
-                                            </select>
+                                            <input type="text" class="form-control form-control-line" required=true name="categoryname" id="categoryname">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="col-sm-12">
-                                            <button type="submit" class="btn btn-success">创建/修改类别</button>
+                                            <button type="submit" class="btn btn-success">创建</button>
                                         </div>
                                     </div>
                                 </form>

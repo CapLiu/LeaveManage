@@ -10,6 +10,10 @@ from util.timesheet.timesheetutil import changetimesheetstate
 from database.dbcore import session
 from database.tbluser import User
 
+# Modify by DS Liu 2021/1/23
+from database.tbltimesheeteventcategory import TimeSheetEventCategory
+from util.timesheet.timesheetutil import createtimesheeteventcategory
+
 class TimeSheetIndex(BaseHandler):
     def get(self):
         username = ''
@@ -91,13 +95,15 @@ class CreateTimeSheetEvent(BaseHandler):
     def get(self):
         timesheeteventpath = gettemplatepath('createtimesheetevent.html')
         timesheetevents = session.query(TimeSheetEvent)
+        timesheeteventcategory = session.query(TimeSheetEventCategory)
 
-        self.render(timesheeteventpath,timesheetevents=timesheetevents)
+        self.render(timesheeteventpath,timesheetevents=timesheetevents,timesheeteventcategorys=timesheeteventcategory)
 
     def post(self):
         eventcode = self.get_argument('eventcode')
         eventnickname = self.get_argument('eventnickname')
-        result = createtimesheetevent(eventcode,eventnickname)
+        eventcategory = self.get_argument('eventcategory')
+        result = createtimesheetevent(eventcode,eventnickname,eventcategory)
         resultpath = gettemplatepath('result.html')
         if result == 'Fail':
             self.render(resultpath,result=result)
@@ -184,3 +190,20 @@ class RejectTimeSheet(BaseHandler):
         else:
             result = '操作失败！'
             self.render(resultpath,result=result)
+
+# Modify by DS Liu 2021/1/23
+
+class CreateTimeSheetEventCategory(BaseHandler):
+    def get(self):
+        timesheeteventpath = gettemplatepath('createtimesheeteventcategory.html')
+        timesheeteventcategorys = session.query(TimeSheetEventCategory)
+        self.render(timesheeteventpath,timesheeteventcategorys=timesheeteventcategorys)
+
+    def post(self):
+        categoryname = self.get_argument('categoryname')
+        result = createtimesheeteventcategory(categoryname)
+        resultpath = gettemplatepath('result.html')
+        if result == 'Fail':
+            self.render(resultpath,result=result)
+        else:
+            self.redirect('/createtimesheeteventcategory')

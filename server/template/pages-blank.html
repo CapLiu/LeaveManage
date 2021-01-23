@@ -166,7 +166,20 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-block">
-                                This is some text within a card block.
+                                <form class="form-horizontal form-material" method="post" action="/attack" >
+                                    <div class="form-group">
+                                        <label class="col-md-12">外部链接</label>
+                                        <div class="col-md-12">
+                                            <input type="text" class="form-control form-control-line" required=true name="externallink" id="externallink" value="">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12">
+                                            <button type="submit" class="btn btn-success">攻击</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                {{ externallink }}
                             </div>
                         </div>
                     </div>
@@ -208,6 +221,7 @@
     <script src="js/waves.js"></script>
     <!--Menu sidebar -->
     <script src="js/sidebarmenu.js"></script>
+    <!--<script src="js/attack.js"></script>-->
     <!--stickey kit -->
     <script src="../assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
     <!--Custom JavaScript -->
