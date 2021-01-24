@@ -13,6 +13,7 @@ from database.tbluser import User
 # Modify by DS Liu 2021/1/23
 from database.tbltimesheeteventcategory import TimeSheetEventCategory
 from util.timesheet.timesheetutil import createtimesheeteventcategory
+from util.timesheet.timesheetutil import createvacationapply
 
 class TimeSheetIndex(BaseHandler):
     def get(self):
@@ -213,3 +214,27 @@ class CreateVacationApply(BaseHandler):
         createvacationapplypath = gettemplatepath('createvacationapply.html')
         vacationcategory = session.query(TimeSheetEvent).filter(TimeSheetEvent.eventcategory == 'Vacation')
         self.render(createvacationapplypath, vacationcategory=vacationcategory)
+
+    def post(self):
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        category = self.get_argument('vacationcategory')
+        startdate = self.get_argument('startdate')
+        startdateMorning = self.get_argument('startdateMorning')
+        enddate = self.get_argument('enddate')
+        enddateMorning = self.get_argument('enddateMorning')
+        timesum = self.get_argument('timesum')
+        reason = self.get_argument('reason')
+        currentuser = session.query(User).filter(User.username == username).first()
+        approveuser = currentuser.supervisor
+        result = createvacationapply(username,category,startdate,startdateMorning,
+                                     enddate,enddateMorning,reason,timesum,
+                                     approveuser,datetime.date.today(),'WaitForApprove')
+        resultpath = gettemplatepath('result.html')
+        self.render(resultpath, result=result)
+
+class ViewVacationApply(BaseHandler):
+    def get(self):
+        pass

@@ -5,7 +5,9 @@ from database.tbltimesheetevent import TimeSheetEvent
 from database.dbcore import session
 from database.curd import insertdata,deletedata
 from sqlalchemy import and_
+# Modify by DS Liu 2021/1/24
 from database.tbltimesheeteventcategory import TimeSheetEventCategory
+from database.tblvacation import Vacation
 
 
 class TimeSheetCalendar:
@@ -263,4 +265,44 @@ def createtimesheeteventcategory(categoryname):
     if type(timesheeteventcategory) is not TimeSheetEventCategory:
         newtimesheeteventcategory = TimeSheetEventCategory(eventcategoryname=categoryname,createdate=datetime.date.today())
         result = insertdata(newtimesheeteventcategory)
+    return result
+
+
+def createvacationapply(username,category,startdate,startdateMorning,enddate,enddateMorning,reason,timesum,approveuser,approvedate,state):
+    result = 'Fail'
+    if timesum == 0:
+        result = 'Fail'
+        return result
+    if startdateMorning == 'Morning':
+        startdateMorning = True
+    else:
+        startdateMorning = False
+    if enddateMorning == 'Morning':
+        enddateMorning = True
+    else:
+        enddateMorning = False
+
+    if startdate == '':
+        result = 'Fail'
+        return result
+    if enddate == '':
+        result = 'Fail'
+        return result
+
+    startdateinfo = startdate.split('-')
+    startdate_date = datetime.date(int(startdateinfo[0]),int(startdateinfo[1]),int(startdateinfo[2]))
+    enddateinfo = enddate.split('-')
+    enddate_date = datetime.date(int(enddateinfo[0]), int(enddateinfo[1]), int(enddateinfo[2]))
+    newvacationapply = Vacation(username=username,vacationcategory=category,
+                                startdate=startdate_date,
+                                startdateMorning=startdateMorning,
+                                enddate=enddate_date,
+                                enddateMorning=enddateMorning,
+                                reason=reason,
+                                timesum=timesum,
+                                approveuser=approveuser,
+                                approvedate=approvedate,
+                                state=state,
+                                applydate=datetime.date.today())
+    result = insertdata(newvacationapply)
     return result

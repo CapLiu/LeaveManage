@@ -18,6 +18,16 @@ class Vacation(Base):
     enddateMorning = Column(Boolean,nullable=False)
     # 请假理由
     reason = Column(String,nullable=False)
+    # 假期总时间
+    timesum = Column(String,nullable=False)
+    # 审批人
+    approveuser = Column(String,nullable=False)
+    # 审批日期
+    approvedate = Column(Date,nullable=False)
+    # 状态
+    state = Column(String,nullable=False)
+    # 提交日期
+    applydate = Column(Date,nullable=False)
 
 
     def __repr__(self):
