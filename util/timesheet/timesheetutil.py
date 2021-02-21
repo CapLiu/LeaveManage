@@ -288,12 +288,16 @@ def createvacationapply(username,category,startdate,startdateMorning,enddate,end
     if enddate == '':
         result = 'Fail'
         return result
-
     startdateinfo = startdate.split('-')
     startdate_date = datetime.date(int(startdateinfo[0]),int(startdateinfo[1]),int(startdateinfo[2]))
     enddateinfo = enddate.split('-')
     enddate_date = datetime.date(int(enddateinfo[0]), int(enddateinfo[1]), int(enddateinfo[2]))
-    newvacationapply = Vacation(username=username,vacationcategory=category,
+
+    check_vacation = session.query(Vacation).filter(and_(Vacation.username==username,Vacation.startdate==startdate_date,Vacation.enddate==enddate_date)).first()
+    if type(check_vacation) is Vacation:
+        result = '当前日期已有假单申请'
+    else:
+        newvacationapply = Vacation(username=username,vacationcategory=category,
                                 startdate=startdate_date,
                                 startdateMorning=startdateMorning,
                                 enddate=enddate_date,
@@ -304,7 +308,7 @@ def createvacationapply(username,category,startdate,startdateMorning,enddate,end
                                 approvedate=approvedate,
                                 state=state,
                                 applydate=datetime.date.today())
-    result = insertdata(newvacationapply)
+        result = insertdata(newvacationapply)
     return result
 
 def viewvacationapply(username):
@@ -331,5 +335,17 @@ def viewvacationapply(username):
         else:
             vacationdict['endtime'] = '13:00'
         vacationdict['timesum'] = vacationapply.timesum
+        vacationdict['username'] = username
         vacationlist.append(vacationdict)
     return vacationlist
+
+
+def changevacationapplystate(vacationId,state,approveuser):
+    vacation = session.query(Vacation).filter(Vacation.id == vacationId).first()
+    if type(vacation) is Vacation:
+        vacation.state = state
+        vacation.applydate = datetime.date.today()
+        vacation.approveuser = approveuser
+        result = insertdata(vacation)
+        return result
+    return 'Fail'

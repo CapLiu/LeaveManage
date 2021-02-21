@@ -13,7 +13,7 @@ from database.tbluser import User
 # Modify by DS Liu 2021/1/23
 from database.tbltimesheeteventcategory import TimeSheetEventCategory
 from util.timesheet.timesheetutil import createtimesheeteventcategory
-from util.timesheet.timesheetutil import createvacationapply,viewvacationapply
+from util.timesheet.timesheetutil import createvacationapply,viewvacationapply,changevacationapplystate
 
 class TimeSheetIndex(BaseHandler):
     def get(self):
@@ -244,3 +244,33 @@ class ViewVacationApply(BaseHandler):
         vacationlist = viewvacationapply(username)
         viewvacationapplypath = gettemplatepath('viewvacationapply.html')
         self.render(viewvacationapplypath,vacationlist=vacationlist)
+
+class ApproveVacationApply(BaseHandler):
+    def get(self):
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        vacationlist = []
+        employees = session.query(User).filter(User.supervisor == username)
+        for employee in employees:
+            tmp_vacationlist = viewvacationapply(employee.username)
+            vacationlist += tmp_vacationlist
+        approvevacationapplypath = gettemplatepath('approvevacationapply.html')
+        self.render(approvevacationapplypath, vacationlist=vacationlist)
+
+    def post(self):
+        vacationId = self.get_argument('vacationId')
+        operationId = vacationId + '_operation'
+        operation = self.get_argument(operationId)
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        result = changevacationapplystate(vacationId,operation,username)
+        if result == 'Success':
+            self.redirect('/approvevacationapply')
+        else:
+            resultpath = gettemplatepath('result.html')
+            self.render(resultpath,result=result)
+

@@ -11,7 +11,7 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
-    <title>查看假单</title>
+    <title>审批假单</title>
     <!-- Bootstrap Core CSS -->
     <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -52,10 +52,10 @@
                 <!-- ============================================================== -->
                 <div class="row page-titles">
                     <div class="col-md-6 col-8 align-self-center">
-                        <h3 class="text-themecolor m-b-0 m-t-0">查看假单</h3>
+                        <h3 class="text-themecolor m-b-0 m-t-0">审批假单</h3>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/">Home</a></li>
-                            <li class="breadcrumb-item active">查看假单</li>
+                            <li class="breadcrumb-item active">审批假单</li>
                         </ol>
                     </div>
                 </div>
@@ -74,6 +74,7 @@
                             <div class="card-block">
                                     <div class="form-group">
                                         <label class="col-md-12">假单ID: {{ vacation['id'] }}</label>
+                                        <label class="col-md-12">请假人: {{ vacation['username'] }}</label>
                                         <label class="col-md-12">假别: {{ escape(vacation['category']) }}</label>
                                         <label class="col-md-12">
                                             {{ vacation['startdate'] }} {{ vacation['starttime'] }} - {{ vacation['enddate'] }} {{ vacation['endtime'] }}
@@ -81,12 +82,37 @@
                                         <label class="col-md-12">
                                             总计 {{ escape(vacation['timesum']) }} 天
                                         </label>
-                                        <label class="col-md-12">
+                                        <label class="col-md-12" id="{{ vacation['id'] }}_vacationstate">
                                             状态: {{ escape(vacation['state']) }}
                                         </label>
+                                        <form id="{{ vacation['id'] }}" method="post" action="/approvevacationapply">
+                                        <label class="col-md-12">
+                                        <input type="hidden" id="vacationId" name="vacationId" value="{{ vacation['id'] }}"/>
+                                        <select class="form-control form-control-line" name="{{ vacation['id'] }}_operation" id="{{ vacation['id'] }}_operation" >
+                                            <option>Approved</option>
+                                            <option>Rejected</option>
+                                        </select>
+                                        <button id="{{ vacation['id'] }}_operationButton" type="submit" class="btn btn-success">操作</button>
+                                        </label>
+                                        </form>
                                     </div>
                             </div>
                         </div>
+                        <script>
+                            var vacationstateId = "{{ vacation['id'] }}" + "_vacationstate";
+                            var operationButtonId = "{{ vacation['id'] }}" + "_operationButton";
+                            var vacationstate = document.getElementById(vacationstateId).innerHTML;
+                            console.log(vacationstate);
+                            var operationButton = document.getElementById(operationButtonId);
+                            if (vacationstate.indexOf("WaitForApprove") == -1)
+                            {
+                                operationButton.disabled = "disabled";
+                            }
+                            else
+                            {
+                                operationButton.disabled = "";
+                            }
+                        </script>
                         {% end %}
                     </div>
                     <!-- Column -->
@@ -138,7 +164,7 @@
     <!-- Style switcher -->
     <!-- ============================================================== -->
     <script src="../assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>
-    
+
 
 </body>
 
