@@ -306,3 +306,30 @@ def createvacationapply(username,category,startdate,startdateMorning,enddate,end
                                 applydate=datetime.date.today())
     result = insertdata(newvacationapply)
     return result
+
+def viewvacationapply(username):
+    vacationlist = []
+    vacationapplys = session.query(Vacation).filter(Vacation.username == username)
+    for vacationapply in vacationapplys:
+        vacationdict = {}
+        vacationdict['id'] = vacationapply.id
+        event = session.query(TimeSheetEvent).filter(TimeSheetEvent.eventcode == vacationapply.vacationcategory).first()
+        if type(event) is TimeSheetEvent:
+            vacationdict['category'] = event.nickname
+        else:
+            vacationdict['category'] = vacationapply.vacationcategory
+
+        vacationdict['state'] = vacationapply.state
+        vacationdict['startdate'] = vacationapply.startdate
+        if vacationapply.startdateMorning == True:
+            vacationdict['starttime'] = '9:00'
+        else:
+            vacationdict['starttime'] = '13:00'
+        vacationdict['enddate'] = vacationapply.enddate
+        if vacationapply.enddateMorning == True:
+            vacationdict['endtime'] = '9:00'
+        else:
+            vacationdict['endtime'] = '13:00'
+        vacationdict['timesum'] = vacationapply.timesum
+        vacationlist.append(vacationdict)
+    return vacationlist

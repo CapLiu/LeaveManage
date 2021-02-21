@@ -13,7 +13,7 @@ from database.tbluser import User
 # Modify by DS Liu 2021/1/23
 from database.tbltimesheeteventcategory import TimeSheetEventCategory
 from util.timesheet.timesheetutil import createtimesheeteventcategory
-from util.timesheet.timesheetutil import createvacationapply
+from util.timesheet.timesheetutil import createvacationapply,viewvacationapply
 
 class TimeSheetIndex(BaseHandler):
     def get(self):
@@ -237,4 +237,10 @@ class CreateVacationApply(BaseHandler):
 
 class ViewVacationApply(BaseHandler):
     def get(self):
-        pass
+        username = ''
+        bytes_user = self.get_secure_cookie('currentuser')
+        if type(bytes_user) is bytes:
+            username = str(bytes_user, encoding='utf-8')
+        vacationlist = viewvacationapply(username)
+        viewvacationapplypath = gettemplatepath('viewvacationapply.html')
+        self.render(viewvacationapplypath,vacationlist=vacationlist)
